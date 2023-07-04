@@ -27,6 +27,7 @@ const defaultConfig = {
 	baseScale: 100,
 	strength: 1,
 	iterationLimit: 1000,
+	randomizeThemeIndex: true,
 	onRollComplete: () => {},
 	onRerollComplete: () => {},
 	onAddDiceComplete: () => {},
@@ -625,12 +626,12 @@ class DiceBox {
 	}
 
 	//spawns one dicemesh object from a single vectordata object
-	spawnDice(vectordata, reset = false) {
+	spawnDice(vectordata, reset = false, diceIndex = undefined) {
 		const {pos, axis, angle, velocity} = vectordata
 		let dicemesh
 		
 		if(!reset) {
-			dicemesh = this.DiceFactory.create(vectordata.type, this.colorData);
+			dicemesh = this.DiceFactory.create(vectordata.type, this.colorData, diceIndex);
 			if(!dicemesh) return;
 			dicemesh.notation = vectordata;
 			dicemesh.result = [];
@@ -1113,7 +1114,7 @@ class DiceBox {
 		this.clearDice();
 
 		for (let i=0, len=this.notationVectors.vectors.length; i < len; ++i) {
-			this.spawnDice(this.notationVectors.vectors[i]);
+			this.spawnDice(this.notationVectors.vectors[i], false, this.randomizeThemeIndex ? undefined : i);
 		}
 		this.simulateThrow();
 		this.steps = 0;
@@ -1123,7 +1124,7 @@ class DiceBox {
 			if (!this.diceList[i]) continue;
 			
 			//reset dice vectors
-			this.spawnDice(this.notationVectors.vectors[i],this.diceList[i]);
+			this.spawnDice(this.notationVectors.vectors[i],this.diceList[i], this.randomizeThemeIndex ? undefined : i);
 		}
 		
 		//check forced results, fix dice faces if necessary

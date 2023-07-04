@@ -51,7 +51,7 @@ class DiceFactory {
 	}
 
 	// returns a dicemesh (THREE.Mesh) object
-	create(type) {
+	create(type, colorData = undefined, diceIndex = undefined) {
 		let diceobj = this.get(type);
 		if (!diceobj) return null;
 
@@ -62,7 +62,7 @@ class DiceFactory {
 		}
 		if (!geom) return null;
 
-		this.setMaterialInfo();
+		this.setMaterialInfo('', diceIndex);
 
 		let dicemesh = new THREE.Mesh(geom, this.createMaterials(diceobj, this.baseScale / 2, 1.0));
 		dicemesh.result = [];
@@ -519,7 +519,9 @@ class DiceFactory {
 	}
 
 	// pass in colorset data from dice-box
-	setMaterialInfo(colorset = '') {
+	setMaterialInfo(colorset = '', diceIndex = undefined) {
+		console.log("diceIndex", diceIndex);
+		console.log(arguments);
 		let prevcolordata = this.colordata;
 		let prevtexture = this.dice_texture;
 		let prevmaterial = this.dice_material;
@@ -536,6 +538,9 @@ class DiceFactory {
 		if (Array.isArray(this.dice_color)) {
 
 			var colorindex = Math.floor(Math.random() * this.dice_color.length);
+			if (typeof diceIndex === "number") {
+				colorindex = diceIndex % this.dice_color.length;
+			}
 
 			// if color list and label list are same length, treat them as a parallel list
 			if (Array.isArray(this.label_color) && this.label_color.length == this.dice_color.length) {
